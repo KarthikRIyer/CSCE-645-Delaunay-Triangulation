@@ -33,3 +33,9 @@ make -j4
 - Click within the rectangular domain to insert a point
 - Press the `G` key to generate a random set of point
 - Press the `T` key to generate the Delaunay Triangulation and corresponding Voronoi diagram
+
+# Acknowledgements
+
+The boilerplate code for OpenGL rendering has been borrowed from the boilerplate provided for CSCE-689 Computer Animation by Prof. Shinjiro Sueda.
+This boilerplate can be found on the [course website](https://people.engr.tamu.edu/sueda/courses/CSCE450/2023F/index.html).
+
