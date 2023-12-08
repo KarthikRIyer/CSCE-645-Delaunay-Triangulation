@@ -111,20 +111,6 @@ void Triangulation::addVert(size_t v) {
     std::vector<Edge> edges;
     std::vector<Edge> uniqueEdges;
 
-    // remove tris with circumcircles containing the vertex
-//    tris.erase(
-//            std::remove_if(tris.begin(), tris.end(),
-//                           [&](const Triangle& t) {
-//                               if (t.inCircumcircle(v, vertices)) {
-//                                   edges.push_back(Edge(t.v0, t.v1));
-//                                   edges.push_back(Edge(t.v1, t.v2));
-//                                   edges.push_back(Edge(t.v2, t.v0));
-//                                   return true;
-//                               }
-//                               return false;
-//                           }),
-//            tris.end());
-
     std::vector<Triangle> newTris;
     for (Triangle t: tris) {
         if (t.inCircumcircle(v, vertices)) {
@@ -157,18 +143,6 @@ void Triangulation::addVert(size_t v) {
 
 void Triangulation::draw(std::shared_ptr<Program> progTri, std::shared_ptr<Program> progPoint, std::shared_ptr<MatrixStack> P, std::shared_ptr<MatrixStack> MV) {
     if (!tris.empty()) {
-//        for (int i = 0; i < tris.size(); i++) {
-//            glLineWidth(1.0f);
-//            glColor3d(0.8, 0.8, 0.8);
-//            glBegin(GL_LINE_STRIP);
-//            glm::vec2 v0 = vertices[tris[i].v0];
-//            glm::vec2 v1 = vertices[tris[i].v1];
-//            glm::vec2 v2 = vertices[tris[i].v2];
-//            glVertex2d(v0.x, v0.y);
-//            glVertex2d(v1.x, v1.y);
-//            glVertex2d(v2.x, v2.y);
-//            glEnd();
-//        }
         progTri->bind();
         glUniformMatrix4fv(progTri->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P->topMatrix()));
         glUniformMatrix4fv(progTri->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
@@ -196,29 +170,6 @@ void Triangulation::draw(std::shared_ptr<Program> progTri, std::shared_ptr<Progr
         glUniformMatrix4fv(progPoint->getUniform("P"), 1, GL_FALSE, glm::value_ptr(P->topMatrix()));
         glUniformMatrix4fv(progPoint->getUniform("MV"), 1, GL_FALSE, glm::value_ptr(MV->topMatrix()));
 
-//        for (Triangle tri: tris) {
-//            glLineWidth(1.0f);
-//            glColor3d(0.5, 0.5,0.5);
-//            glBegin(GL_LINES);
-//            glVertex2d(vertices[tri.v0].x, vertices[tri.v0].y);
-//            glVertex2d(vertices[tri.v1].x, vertices[tri.v1].y);
-//            glVertex2d(vertices[tri.v1].x, vertices[tri.v1].y);
-//            glVertex2d(vertices[tri.v2].x, vertices[tri.v2].y);
-//            glVertex2d(vertices[tri.v2].x, vertices[tri.v2].y);
-//            glVertex2d(vertices[tri.v0].x, vertices[tri.v0].y);
-//            glEnd();
-//        }
-
-//        glPointSize(5);
-//        glBegin(GL_POINTS);
-//        glColor3d(0.0, 0.0, 0.0);
-//        for (glm::vec2 p: this->voronoiVertices) {
-//            glVertex2d(p.x, p.y);
-//        }
-//        glEnd();
-//        progPoint->unbind();
-
-//        glPointSize(5);
         glLineWidth(2.0f);
         glBegin(GL_LINES);
         glColor3d(0.2, 0.2, 0.2);
@@ -234,7 +185,13 @@ void Triangulation::draw(std::shared_ptr<Program> progTri, std::shared_ptr<Progr
 }
 
 void Triangulation::voronoi(std::vector<glm::vec2> pts) {
+    auto start = std::chrono::high_resolution_clock::now();
     this->triangulate(pts);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout<<"Time triangulation: "<<duration.count()<<" microseconds\n";
+
+    start = std::chrono::high_resolution_clock::now();
     this->voronoiEdges.clear();
     this->voronoiVertices.clear();
     for (Triangle &tri: tris) {
@@ -245,32 +202,9 @@ void Triangulation::voronoi(std::vector<glm::vec2> pts) {
         std::vector<Edge> edges = tri.getEdges();
         for (Edge e: edges) {
             voronoiEdges[e].push_back(e.c);
-//            if (voronoiEdges.find(e) == voronoiEdges.end()) {
-//                voronoiEdges[e].push_back(e.c);
-//            } else {
-//
-//            }
         }
     }
-//    std::cout<<"HERE\n";
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout<<"Time voronoi: "<<duration.count()<<" microseconds\n";
 }
-
-//void Triangulation::saveObj(const std::string& filename) {
-//    std::ofstream file(filename);
-//    for (size_t i = 0; i < vertices.size(); i++) {
-//        float x = vertices[i].x;
-//        float y = vertices[i].y;
-////        float z = vertices[i].z;
-//        file << std::fixed;
-//        file << "v "<< x << " " << z << " " << y << std::endl;
-//    }
-//
-//    for (size_t i = 0; i < tris.size(); i++) {
-//        size_t x = tris[i].v0 + 1;
-//        size_t y = tris[i].v1 + 1;
-//        size_t z = tris[i].v2 + 1;
-//        file << std::fixed;
-//        file << "f "<< x << " " << y << " " << z << std::endl;
-//    }
-//    file.close();
-//}

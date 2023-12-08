@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <chrono>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -53,31 +54,120 @@ static void char_callback(GLFWwindow *window, unsigned int key)
             points.clear();
             t.reset();
             break;
-        case 't':
+        case 't': {
             t.reset();
+            auto start = std::chrono::high_resolution_clock::now();
             t.voronoi(points);
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            std::cout<<"Time taken: "<<duration.count()<<" microseconds\n";
             break;
+        }
 	    case 'g':
-	        points.clear();
+        {
+            points.clear();
             int width, height;
             glfwGetWindowSize(window, &width, &height);
             float aspect = (float)width/height;
             double ymax = 100;
             double xmax = aspect*ymax;
-//            P->multMatrix(glm::ortho(-xmax, xmax, -ymax, ymax, -1.0, 1.0));
             double yBound = ymax - 10;
             double xBound = xmax - 10;
             points.push_back(glm::vec2(-xBound, -yBound));
             points.push_back(glm::vec2(xBound, -yBound));
             points.push_back(glm::vec2(xBound, yBound));
             points.push_back(glm::vec2(-xBound, yBound));
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
                 float x = -xBound + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2*xBound)));
                 float y = -yBound + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(2*yBound)));
                 points.push_back(glm::vec2(x,y));
             }
             t.reset();
-	        break;
+            break;
+        }
+        case 'a':
+        {
+            points.clear();
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            float aspect = (float)width/height;
+            double ymax = 100;
+            double xmax = aspect*ymax;
+            double yBound = ymax - 10;
+            double xBound = xmax - 10;
+
+            float x = -10;
+            float y = -10;
+            points.push_back(glm::vec2(x,y));
+            x = -20;
+            y = -30;
+            points.push_back(glm::vec2(x,y));
+            x = 40;
+            y = -20;
+            points.push_back(glm::vec2(x,y));
+            x = 30;
+            y = 40;
+            points.push_back(glm::vec2(x,y));
+            x = 10;
+            y = 10;
+            points.push_back(glm::vec2(x,y));
+            x = -20;
+            y = 30;
+            points.push_back(glm::vec2(x,y));
+            x = -20;
+            y = 20;
+            points.push_back(glm::vec2(x,y));
+
+            t.reset();
+            break;
+        }
+        case 's':
+        {
+            points.clear();
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            float aspect = (float)width/height;
+            double ymax = 100;
+            double xmax = aspect*ymax;
+            double yBound = ymax - 10;
+            double xBound = xmax - 10;
+
+            float x = 0;
+            float y = 0;
+            points.push_back(glm::vec2(x+50,y));
+            x = -133;
+            y = 0;
+            points.push_back(glm::vec2(x+50,y));
+            x = -65;
+            y = -1.5;
+            points.push_back(glm::vec2(x+50,y));
+            x = -68;
+            y = -1.5;
+            points.push_back(glm::vec2(x+50,y));
+
+            t.reset();
+            break;
+        }
+        case 'd':
+        {
+            points.clear();
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            float aspect = (float)width/height;
+            double ymax = 100;
+            double xmax = aspect*ymax;
+            double yBound = ymax - 10;
+            double xBound = xmax - 10;
+            int n = 20;
+            for (float i = -xBound; i <= xBound; i += (xBound/n)) {
+                for (float j = -yBound; j <= yBound; j += (yBound/n)) {
+                    points.push_back(glm::vec2(i,j));
+                }
+            }
+
+            t.reset();
+            break;
+        }
 	}
 }
 
